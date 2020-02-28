@@ -1,14 +1,14 @@
+require 'twitter'
 class TopController < ApplicationController
   skip_before_action :authenticate
 
-  list_tuning = ["Regular", "Half down"]
 
   def index
   end
 
   def tweet
-    if signed_in?
       client = Twitter::REST::Client.new do |config|
+        list_tuning = ["Regular", "Half step down", "Whole step down", "Half + Whole step down", "Drop D", "Drop C#", "Drop B"]
         # applicationの設定
         config.consumer_key         = Settings.twitter_key
         config.consumer_secret      = Settings.twitter_secret
@@ -17,13 +17,15 @@ class TopController < ApplicationController
         config.access_token         = user_auth.token
         config.access_token_secret  = user_auth.secret
 
-        client.update(list_tuning[0])
+        idx = rand(list_tuning.size)
+        tuning = list_tuning[idx]
+        text = %(今日のチューニング: #{tuning} from ruby app)
+        config.update(text)
 
         redirect_to root_path, notice: "ツイートしました"
 
         #まだログインしてなかったときはどうするか
         #rescueで対応？
-      end
     end
   end
 end
